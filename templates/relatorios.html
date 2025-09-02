@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Relatórios e Resumos</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/relatorios.css') }}">
+</head>
+<body>
+    <div class="relatorios-container">
+        <h1>Relatórios e Resumos</h1>
+
+        <div class="exportar-container">
+            <a href="/exportar_relatorios/csv"><button class="exportar-btn">Exportar para CSV</button></a>
+            <a href="/exportar_relatorios/xls"><button class="exportar-btn">Exportar para Excel</button></a>
+        </div>
+
+        <h2>Total de Horas por Mês</h2>
+        <table>
+            <thead><tr><th>Mês/Ano</th><th>Horas</th></tr></thead>
+            <tbody>
+                {% for mes, horas in total_horas_mes.items() %}
+                <tr><td>{{ mes }}</td><td>{{ "%.2f"|format(horas) }}</td></tr>
+                {% else %}
+                <tr><td colspan="2">Nenhum dado disponível.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h2>Total de Horas por Gravação</h2>
+        <table>
+            <thead><tr><th>Programa</th><th>Horas</th></tr></thead>
+            <tbody>
+                {% for programa, horas in total_horas_programa.items() %}
+                <tr><td>{{ programa }}</td><td>{{ "%.2f"|format(horas) }}</td></tr>
+                {% else %}
+                <tr><td colspan="2">Nenhum dado disponível.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <a href="/" class="botao-voltar">← Voltar ao Menu</a>
+    </div>
+  </script>
+
+<canvas id="particle-canvas"></canvas>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+</body>
+</html>

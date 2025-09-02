@@ -1,0 +1,198 @@
+* {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      /* FUNDO FUTURISTA APLICADO AQUI */
+      background-color: #000;
+      color: #ffffff;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    /* Canvas para a animação de fundo */
+    #matrix-canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1; /* Fica atrás do conteúdo */
+    }
+
+    /* Garante que o conteúdo fique na frente da animação */
+    header, .painel, footer {
+        position: relative;
+        z-index: 2;
+    }
+
+    header {
+      padding: 20px 30px;
+      background: linear-gradient(to right, rgba(0, 119, 255, 0.8), rgba(0, 198, 255, 0.8));
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+      border-bottom: 1px solid rgba(0, 191, 255, 0.5);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .titulo {
+      font-size: 28px;
+      font-weight: bold;
+      color: white;
+      letter-spacing: 1px;
+      text-shadow: 1px 1px 3px #000;
+    }
+
+    .clock {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 36px;
+        font-weight: bold;
+        color: #ff0000;
+        background-color: #002200;
+        padding: 8px 16px;
+        border-radius: 8px;
+        border: 2px solid #ff0000;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
+        text-shadow: 0 0 5px rgba(0, 0, 0, 0.9);
+        animation: glow 2s infinite alternate;
+    }
+
+    @keyframes glow {
+      from { box-shadow: 0 0 5px rgb(255, 0, 0); }
+      to { box-shadow: 0 0 20px rgb(255, 0, 0); }
+    }
+
+    .gif-logo {
+      height: 60px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px #00ffff80;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 10px #00c6ff; }
+      50% { box-shadow: 0 0 20px #00fff2; }
+      100% { box-shadow: 0 0 10px #00c6ff; }
+    }
+
+    .painel {
+      display: flex;
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px; /* antes 30px */
+      gap: 10px;     /* antes 30px */
+      background-color: rgba(18, 18, 18, 0.7);
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+    }
+
+    .tabela-visualizacao {
+      flex: 1 1 48%; /* antes era flex: 1 */
+      background: rgba(31, 31, 31, 0.8);
+      border-radius: 15px;
+      padding: 20px;
+      border: 1px solid rgba(0, 191, 255, 0.3);
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.1);
+    }
+
+    .tabela-visualizacao h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 32px;
+      border-bottom: 2px solid #00c6ff;
+      padding-bottom: 10px;
+      color: white;
+    }
+
+    .tabela-visualizacao table {
+      width: 100%;
+      border-collapse: collapse;
+      color: white;
+    }
+
+    .tabela-visualizacao th, .tabela-visualizacao td {
+      padding: 14px;
+      border: 1px solid #333;
+      text-align: center;
+      font-size: 22px;
+    }
+
+    .tabela-visualizacao th {
+      background: #00c6ff22;
+      font-weight: bold;
+    }
+
+    .tabela-visualizacao td {
+      background: #222;
+    }
+    
+    /* Efeito Neon para Linha Ao Vivo */
+    .linha-ao-vivo td {
+        border: 1px solid rgba(255, 0, 0, 0.5);
+        box-shadow: 0 0 8px rgba(255, 0, 0, 0.6), inset 0 0 8px rgba(255, 0, 0, 0.4);
+    }
+
+
+    .tabela-visualizacao tr:hover td {
+      background-color: #333;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    footer {
+      text-align: center;
+      padding: 10px;
+      font-size: 12px;
+      background-color: rgba(0, 0, 0, 0.8);
+      border-top: 1px solid rgba(0, 191, 255, 0.3);
+      color: #aaa;
+    }
+    .versao {
+    position: fixed;
+    bottom: 10px;    
+    right: 10px;
+    font-size: 14px; 
+    color: white;
+    font-family: Arial, sans-serif;
+    opacity: 0.7;
+    z-index: 9999;     
+}
+
+/* --- ESTILO DO AVISO DE ATUALIZAÇÃO (TOAST) --- */
+.toast {
+    visibility: hidden;
+    min-width: 300px;
+    background-color: #28a745; /* Verde Sucesso, bem visível */
+    color: white;
+    text-align: center;
+    border-radius: 5px;
+    padding: 16px;
+    position: fixed;
+    z-index: 10;
+    left: 50%;
+    transform: translateX(-50%);
+    top: -100px; /* Começa escondido acima da tela */
+    font-size: 20px;
+    font-weight: bold;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    transition: top 0.5s ease-in-out; /* Animação de deslize */
+}
+
+/* Classe para mostrar o aviso, deslizando para baixo */
+.toast.show {
+    visibility: visible;
+    top: 20px; /* Posição final na tela */
+}

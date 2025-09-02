@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+  <title>Gravações</title>
+</head>
+<body>
+
+  <a href="/" class="botao-voltar">⬅ Voltar ao Menu</a>
+
+  <div class="container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash-message {% if category == 'error' %}flash-error{% endif %}">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <img src="/static/logo.jpg" alt="Logo TV Atalaia">
+
+    <div class="tipo-selector">
+      <input type="radio" id="estudio" name="tipo-radio" value="estudio">
+      <label for="estudio">Estúdio</label>
+
+      <input type="radio" id="externa" name="tipo-radio" value="externa">
+      <label for="externa">Externa</label>
+      
+      <input type="radio" id="ao_vivo" name="tipo-radio" value="ao_vivo">
+      <label for="ao_vivo">Ao Vivo</label>
+    </div>
+
+    <h1 id="tituloTipo">Gravações</h1>
+    <h2>Adicionar nova gravação</h2>
+
+    <form action="/gravacoes" method="post">
+      <input type="hidden" name="tipo" id="tipoHidden" value="">
+
+      <label>Data:
+        <input type="date" name="data" required>
+      </label>
+
+      <label>Horário:
+        <input type="time" name="horario" required>
+      </label>
+
+      <div id="campo-programa" class="campo-dinamico">
+        <label>Programa:
+            <select name="programa">
+              {% for item in programa %}
+                <option value="{{item.id_programa}}"> {{item.descricao}}</option>
+              {% endfor %}
+            </select>
+        </label>
+      </div>
+
+      <div id="campo-producao-interna" class="campo-dinamico" style="display: none;">
+        <label>Produção Interna:
+            <select name="producao_interna">
+                {% for item in producaoInterna %}
+                <option value="{{item.id_producao_interna}}">{{item.descricao}}</option>
+                {% endfor %}
+            </select>
+        </label>
+
+        <div class="equipe-container">
+            <h3>Montar Equipa Interna</h3>
+            <div class="equipe-controls">
+                <div class="select-container">
+                    <label for="funcionario-select-interna">Funcionário:</label>
+                    <select id="funcionario-select-interna">
+                        {% for item in funcionarios %}
+                            {% if item.departamento.descricao == 'Produção'%}
+                            <option value="{{item.id_funcionario}}">{{item.nome}}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="input-container">
+                    <label for="funcao-input-interna">Função:</label>
+                    <select id="funcao-input-interna">
+                        <option value="Diretor de Imagem">Diretor de Imagem</option>
+                        <option value="Operador de Áudio">Operador de Áudio</option>
+                        <option value="Operador de TP">Operador de TP</option>
+                    </select>
+                </div>
+                <button type="button" id="add-funcionario-btn-interna">Adicionar à Equipa +</button>
+            </div>
+            <h4>Equipa da Gravação:</h4>
+            <ul id="lista-equipe-interna"></ul>
+            <input type="hidden" name="equipe_data_interna" id="equipe-data-hidden-interna">
+        </div>
+    </div>
+
+    <div id="campo-cliente-externo" class="campo-dinamico" style="display: none;">
+        <label>Cliente Externo:
+            <select name="cliente_externo">
+                {% for item in clienteExterno %}
+                <option value="{{item.id_cliente_externo}}">{{item.descricao}}</option>
+                {% endfor %}
+            </select>
+        </label>
+
+        <div class="equipe-container">
+            <h3>Montar Equipa Externa</h3>
+            <div class="equipe-controls">
+                <div class="select-container">
+                    <label for="funcionario-select-externa">Funcionário:</label>
+                    <select id="funcionario-select-externa">
+                        {% for item in funcionarios %}
+                            {% if item.departamento.descricao == 'Jornalismo'%}
+                            <option value="{{item.id_funcionario}}">{{item.nome}}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="input-container">
+                    <label for="funcao-input-externa">Função:</label>
+                    <select id="funcao-input-externa">
+                        <option value="Reporter">Reporter</option>
+                        <option value="Cinegrafista">Cinegrafista</option>
+                        <option value="Motorista">Motorista</option>
+                    </select>
+                </div>
+                <button type="button" id="add-funcionario-btn-externa">Adicionar à Equipa +</button>
+            </div>
+            <h4>Equipa da Gravação:</h4>
+            <ul id="lista-equipe-externa"></ul>
+            <input type="hidden" name="equipe_data_externa" id="equipe-data-hidden-externa">
+        </div>
+    </div>
+
+      <button type="submit">Salvar</button>
+    </form>
+
+    <h2>Gravações Registradas</h2>
+
+    <div class="filtro-container">
+      <div>
+        <label for="filtroTipo"><strong>Filtrar por tipo:</strong></label>
+        <select id="filtroTipo">
+          <option value="todos">Todos</option>
+          <option value="Estudio">Estúdio</option>
+          <option value="Externa">Externa</option>
+          <option value="Ao Vivo">Ao Vivo</option>
+        </select>
+      </div>
+      <div>
+        <label for="filtroData"><strong>Filtrar por data:</strong></label>
+        <input type="date" id="filtroData" class="date-input">
+      </div>
+      <div>
+        <label for="searchBar"><strong>Buscar:</strong></label>
+        <input type="text" id="searchBar" class="search-input" placeholder="Pesquisar...">
+      </div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>Data e Hora</th>
+          <th>Tipo da Gravação</th>
+          <th>Descrição da Gravação</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in gravações %}
+        <tr data-tipo="{{ item.tipo }}" 
+            data-data-original="{{ g.get('data_original', '') }}">
+          <td>{{ item.id }}</td>
+          <td>{{ item.data_hora }}</td>
+          <td>{{ item.tipo }}</td>
+          <td>{{ item.descricao }}</td>
+          <td class="acoes">
+            <form action="/gravacoes/editar/{{ item.id }}" method="get">
+              <button type="submit" class="editar">Editar</button>
+            </form>
+            <form action="/gravacoes/excluir/{{ item.id }}" method="POST" class="form-excluir" style="display:inline;">
+              <button type="button" class="excluir" onclick="confirmarExclusao(this)">Excluir</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>        
+    </table>
+  </div>
+
+  <!-- SCRIPT PARA MUDAR OS CAMPOS DINÂMICAMENTE -->
+  <script>
+    // Adiciona um "ouvinte" de eventos a todos os botões de rádio com o nome 'tipo-radio'
+    document.querySelectorAll('input[name="tipo-radio"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            // Primeiro, esconde todos os campos que podem mudar
+            document.querySelectorAll('.campo-dinamico').forEach(div => {
+                div.style.display = 'none';
+            });
+
+            // Pega o valor do botão de rádio que foi selecionado (ex: 'ao_vivo', 'externa', 'estudio')
+            const tipoSelecionado = this.value;
+
+            // Atualiza o título e o campo hidden que será enviado para o backend
+            const tipoHidden = document.getElementById('tipoHidden');
+            const tituloTipo = document.getElementById('tituloTipo');
+
+            if (tipoSelecionado === 'ao_vivo') {
+                document.getElementById('campo-programa').style.display = 'block';
+                tituloTipo.innerText = 'Gravação Ao Vivo';
+                tipoHidden.value = 'Ao Vivo'; // Valor para o banco
+            } else if (tipoSelecionado === 'externa') {
+                document.getElementById('campo-cliente-externo').style.display = 'block';
+                tituloTipo.innerText = 'Gravação Externa';
+                tipoHidden.value = 'Externa'; // Valor para o banco
+            } else if (tipoSelecionado === 'estudio') {
+                document.getElementById('campo-producao-interna').style.display = 'block';
+                tituloTipo.innerText = 'Gravação de Estúdio';
+                tipoHidden.value = 'Interna'; // Valor para o banco
+            }
+        });
+    });
+
+    // Opcional: Simula um clique no primeiro botão ao carregar a página para inicializar o formulário
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelector('input[name="tipo-radio"]:checked')?.dispatchEvent(new Event('change'));
+    });
+  </script>
+
+  <!-- SCRIPT PARA MONTAR A EQUIPE -->
+<script>
+  // Função genérica para gerir um componente de equipa
+function gerirEquipe(prefixo) {
+    // Constrói os IDs com base no prefixo (ex: 'interna' ou 'externa')
+    const funcionarioSelect = document.getElementById(`funcionario-select-${prefixo}`);
+    const funcaoInput = document.getElementById(`funcao-input-${prefixo}`);
+    const addFuncionarioBtn = document.getElementById(`add-funcionario-btn-${prefixo}`);
+    const listaEquipe = document.getElementById(`lista-equipe-${prefixo}`);
+    const equipeDataHidden = document.getElementById(`equipe-data-hidden-${prefixo}`);
+
+    // Array para armazenar os dados da equipa (específico para esta instância)
+    let equipe = [];
+
+    // Função para atualizar a lista visível e o campo hidden
+    function atualizarEquipe() {
+        listaEquipe.innerHTML = '';
+        equipe.forEach((membro, index) => {
+            const listItem = document.createElement('li');
+            listItem.innerHTML = `
+                <span><strong>${membro.nome}</strong> - ${membro.funcao}</span>
+                <button type="button" class="remover-btn" data-prefixo="${prefixo}" data-index="${index}">Remover</button>
+            `;
+            listaEquipe.appendChild(listItem);
+        });
+        equipeDataHidden.value = JSON.stringify(equipe);
+    }
+
+    // Evento para o botão "Adicionar"
+    addFuncionarioBtn.addEventListener('click', () => {
+        const funcionarioId = funcionarioSelect.value;
+        const funcionarioNome = funcionarioSelect.options[funcionarioSelect.selectedIndex].text;
+        const funcao = funcaoInput.value.trim();
+
+        if (!funcao) {
+            alert('Por favor, defina uma função para o funcionário.');
+            return;
+        }
+        if (equipe.some(membro => membro.id === funcionarioId)) {
+            alert('Este funcionário já foi adicionado à equipa.');
+            return;
+        }
+
+        equipe.push({ id: funcionarioId, nome: funcionarioNome, funcao: funcao });
+        funcaoInput.value = ''; // Limpa o campo de função
+        atualizarEquipe();
+    });
+
+    // Evento para os botões "Remover"
+    listaEquipe.addEventListener('click', (event) => {
+        if (event.target.classList.contains('remover-btn') && event.target.getAttribute('data-prefixo') === prefixo) {
+            const indexParaRemover = parseInt(event.target.getAttribute('data-index'));
+            equipe.splice(indexParaRemover, 1);
+            atualizarEquipe();
+        }
+    });
+
+    // Inicializa o campo hidden
+    atualizarEquipe();
+}
+
+// "Liga" a nossa função genérica aos dois componentes de equipa no HTML
+// Esta é a parte mais importante: inicializamos a lógica para ambos os formulários!
+document.addEventListener('DOMContentLoaded', function() {
+    gerirEquipe('interna');
+    gerirEquipe('externa');
+});
+  </script>
+
+  <script>
+    const tipoRadios = document.querySelectorAll('input[name="tipo-radio"]');
+    const tipoHidden = document.getElementById('tipoHidden');
+    const aoVivoHidden = document.getElementById('aoVivoHidden');
+    const tituloTipo = document.getElementById('tituloTipo');
+    const form = document.querySelector('form');
+    const filtroTipo = document.getElementById('filtroTipo');
+    const filtroData = document.getElementById('filtroData');
+    const searchBar = document.getElementById('searchBar');
+    const tabelaCorpo = document.querySelector('tbody');
+
+    tipoRadios.forEach(radio => {
+        radio.addEventListener('change', () => {
+            aoVivoHidden.value = 'false'; // Reset para o padrão
+
+            if (radio.value === 'ao_vivo') {
+                tipoHidden.value = 'estudio'; // Ao vivo é sempre do tipo estúdio
+                aoVivoHidden.value = 'true';
+                tituloTipo.innerText = 'Gravações Ao Vivo Estúdio';
+            } else if (radio.value === 'externa') {
+                tipoHidden.value = 'externa';
+                tituloTipo.innerText = 'Gravação Externa';
+            } else { // estúdio
+                tipoHidden.value = 'estudio';
+                tituloTipo.innerText = 'Gravação de Estúdio';
+            }
+        });
+    });
+
+    form.addEventListener('submit', function (e) {
+      if (!tipoHidden.value) {
+        alert('⚠️ Por favor, selecione o tipo de gravação (Estúdio, Externa ou Ao Vivo) antes de salvar.');
+        e.preventDefault();
+      }
+    });
+
+    function aplicarFiltros() {
+      const tipoSelecionado = filtroTipo.value;
+      const dataSelecionada = filtroData.value;
+      const termoBusca = searchBar.value.toLowerCase();
+      const linhas = tabelaCorpo.querySelectorAll('tr');
+
+      linhas.forEach(linha => {
+        const tipoLinha = linha.getAttribute('data-tipo') || 'todos';
+        const aoVivoLinha = linha.getAttribute('data-ao-vivo') === 'true';
+        const dataOriginal = linha.getAttribute('data-data-original') || '';
+        const textoLinha = linha.textContent.toLowerCase();
+        
+        let correspondeTipo = false;
+        if (tipoSelecionado === 'todos') {
+            correspondeTipo = true;
+        } else if (tipoSelecionado === 'Ao Vivo') {
+            correspondeTipo = aoVivoLinha;
+        } else if (tipoSelecionado === 'Estudio') {
+            // Mostra apenas os que são tipo 'estudio' E NÃO são 'ao_vivo'
+            correspondeTipo = (tipoLinha === 'Estudio' && !aoVivoLinha);
+        } else { // Caso para 'externa'
+            correspondeTipo = tipoLinha === tipoSelecionado;
+        }
+
+        const correspondeData = (!dataSelecionada || dataOriginal === dataSelecionada);
+        const correspondeBusca = textoLinha.includes(termoBusca);
+        
+        linha.style.display = (correspondeTipo && correspondeData && correspondeBusca) ? '' : 'none';
+      });
+    }
+
+    filtroTipo.addEventListener('change', aplicarFiltros);
+    filtroData.addEventListener('change', aplicarFiltros);
+    searchBar.addEventListener('input', aplicarFiltros);
+
+    function confirmarExclusao(botao) {
+      const nome = prompt("Digite seu nome para confirmar a exclusão:");
+      if (nome && nome.trim() !== "") {
+        const form = botao.closest('form');
+        form.querySelector('.campo-excluido-por').value = nome.trim();
+        form.submit();
+      } else {
+        alert("A exclusão foi cancelada. Nome obrigatório para continuar.");
+      }
+    }
+  </script>
+
+<canvas id="particle-canvas"></canvas>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+</body>
+</html>

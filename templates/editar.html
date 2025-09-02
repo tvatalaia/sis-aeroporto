@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Editar Gravação</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/editar.css') }}">
+</head>
+<body>
+
+  <div class="container">
+    <h1>Editar Gravação</h1>
+
+    <form id="form-editar" action="/editar/{{ gravacao.id_gravacao }}" method="post">
+      <label>Data:</label>
+      <input type="text" name="data" value="{{ gravacao.data_hora }}" required>
+      <label>Horário:</label>
+      <input type="time" name="horario" value="" required>
+      <label>Programa:</label>
+      <input type="text" name="programa" value="" required>
+      <label>Tipo:</label>
+      <input type="text" name="tipo" value="{{ gravacao.tipo}}" required>
+      <label>Duração (minutos):</label>
+      <input type="number" name="duracao" value="" min="1" required>
+
+      <!-- Campo oculto para registrar o editor -->
+      <input type="hidden" name="editor" id="editorHidden">
+       
+      <input type="hidden" name="ip_usuario" value="">
+
+      <div class="actions">
+        <button type="submit">Salvar Alterações</button>
+        <a href="/nova">Cancelar</a>
+      </div>
+    </form>
+  </div>
+  </script>
+
+<canvas id="particle-canvas"></canvas>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+</body>
+</html>
