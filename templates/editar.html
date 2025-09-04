@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
   <title>Editar Gravação</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/editar.css') }}">
 </head>
+
 <body>
 
   <div class="container">
@@ -13,30 +15,218 @@
     <form id="form-editar" action="/editar/{{ gravacao.id_gravacao }}" method="post">
       <label>Data:</label>
       <input type="text" name="data" value="{{ gravacao.data_hora }}" required>
-      <label>Horário:</label>
-      <input type="time" name="horario" value="" required>
-      <label>Programa:</label>
-      <input type="text" name="programa" value="" required>
-      <label>Tipo:</label>
-      <input type="text" name="tipo" value="{{ gravacao.tipo}}" required>
-      <label>Duração (minutos):</label>
-      <input type="number" name="duracao" value="" min="1" required>
 
-      <!-- Campo oculto para registrar o editor -->
-      <input type="hidden" name="editor" id="editorHidden">
-       
-      <input type="hidden" name="ip_usuario" value="">
+      <input type="hidden" name="tipo" value="{{ gravacao.tipo}}" required>
 
+      {% if gravacao.tipo == "Ao Vivo" %}
+      <div id="campo-programa" class="campo-dinamico">
+        <label>Programa:
+          <select name="programa">
+            {% for item in programa %}
+            <option value="{{item.id_programa}}"> {{item.descricao}}</option>
+            {% endfor %}
+          </select>
+        </label>
+      </div>
+      {% elif gravacao.tipo == "Interna" %}
+      <div id="campo-producao-interna" class="campo-dinamico">
+        <label>Produção Interna:
+          <select name="producao_interna">
+            {% for item in producaoInterna %}
+            <option value="{{item.id_producao_interna}}">{{item.descricao}}</option>
+            {% endfor %}
+          </select>
+        </label>
+
+        <div class="equipe-container">
+          <h3>Montar Equipa Interna</h3>
+          <div class="equipe-controls">
+            <div class="select-container">
+              <label for="funcionario-select-interna">Funcionário:</label>
+              <select id="funcionario-select-interna">
+                {% for item in funcionarios %}
+                {% if item.departamento.descricao == 'Produção'%}
+                <option value="{{item.id_funcionario}}">{{item.nome}}</option>
+                {% endif %}
+                {% endfor %}
+              </select>
+            </div>
+            <div class="input-container">
+              <label for="funcao-input-interna">Função:</label>
+              <select id="funcao-input-interna">
+                <option value="Diretor de Imagem">Diretor de Imagem</option>
+                <option value="Operador de Áudio">Operador de Áudio</option>
+                <option value="Operador de TP">Operador de TP</option>
+              </select>
+            </div>
+            <button type="button" id="add-funcionario-btn-interna">Adicionar à Equipa +</button>
+          </div>
+          <h4>Equipa da Gravação:</h4>
+
+          <ul id="lista-equipe-interna" data-equipe-inicial='[
+            {% for membro in gravacao.funcionarios_associados %}
+                {
+                    "id": "{{ membro.funcionario.id_funcionario }}",
+                    "nome": "{{ membro.funcionario.nome }}",
+                    "funcao": "{{ membro.funcao }}"
+                }{% if not loop.last %},{% endif %}
+            {% endfor %}
+        ]'>
+          </ul>
+
+          <input type="hidden" name="equipe_data_interna" id="equipe-data-hidden-interna">
+        </div>
+      </div>
+      {% else %}
+      <div id="campo-cliente-externo" class="campo-dinamico">
+        <label>Cliente Externo:
+          <select name="cliente_externo">
+            {% for item in clienteExterno %}
+            <option value="{{item.id_cliente_externo}}">{{item.descricao}}</option>
+            {% endfor %}
+          </select>
+        </label>
+
+        <div class="equipe-container">
+          <h3>Montar Equipa Externa</h3>
+          <div class="equipe-controls">
+            <div class="select-container">
+              <label for="funcionario-select-externa">Funcionário:</label>
+              <select id="funcionario-select-externa">
+                {% for item in funcionarios %}
+                {% if item.departamento.descricao == 'Jornalismo'%}
+                <option value="{{item.id_funcionario}}">{{item.nome}}</option>
+                {% endif %}
+                {% endfor %}
+              </select>
+            </div>
+            <div class="input-container">
+              <label for="funcao-input-externa">Função:</label>
+              <select id="funcao-input-externa">
+                <option value="Reporter">Reporter</option>
+                <option value="Cinegrafista">Cinegrafista</option>
+                <option value="Motorista">Motorista</option>
+              </select>
+            </div>
+            <button type="button" id="add-funcionario-btn-externa">Adicionar à Equipa +</button>
+          </div>
+          <h4>Equipa da Gravação:</h4>
+
+          <ul id="lista-equipe-externa" data-equipe-inicial='[
+            {% for membro in gravacao.funcionarios_associados %}
+                {
+                    "id": "{{ membro.funcionario.id_funcionario }}",
+                    "nome": "{{ membro.funcionario.nome }}",
+                    "funcao": "{{ membro.funcao }}"
+                }{% if not loop.last %},{% endif %}
+            {% endfor %}
+        ]'>
+          </ul>
+
+          <input type="hidden" name="equipe_data_externa" id="equipe-data-hidden-externa">
+        </div>
+      </div>
+      {% endif %}
       <div class="actions">
         <button type="submit">Salvar Alterações</button>
-        <a href="/nova">Cancelar</a>
+        <a href="/gravacoes">Cancelar</a>
       </div>
     </form>
   </div>
   </script>
 
-<canvas id="particle-canvas"></canvas>
-<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  <canvas id="particle-canvas"></canvas>
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  <script>
+    // Função genérica para gerir um componente de equipa
+    function gerirEquipe(prefixo) {
+      const funcionarioSelect = document.getElementById(`funcionario-select-${prefixo}`);
+      const funcaoInput = document.getElementById(`funcao-input-${prefixo}`);
+      const addFuncionarioBtn = document.getElementById(`add-funcionario-btn-${prefixo}`);
+      const listaEquipe = document.getElementById(`lista-equipe-${prefixo}`);
+      const equipeDataHidden = document.getElementById(`equipe-data-hidden-${prefixo}`);
 
+      // Array para armazenar os dados da equipa
+      let equipe = [];
+
+      // --- NOVA FUNÇÃO DE INICIALIZAÇÃO ---
+      function inicializarEquipe() {
+        // Pega a string JSON do atributo data-*
+        const dadosIniciaisJSON = listaEquipe.getAttribute('data-equipe-inicial');
+        if (dadosIniciaisJSON) {
+          try {
+            // Converte a string JSON para um array de objetos e inicializa a 'equipe'
+            equipe = JSON.parse(dadosIniciaisJSON);
+          } catch (e) {
+            console.error("Erro ao ler os dados iniciais da equipa:", e);
+            equipe = [];
+          }
+        }
+        // Renderiza a lista inicial
+        atualizarEquipe();
+      }
+
+      // Função para atualizar a lista visível e o campo hidden (sem alterações)
+      function atualizarEquipe() {
+        listaEquipe.innerHTML = '';
+        equipe.forEach((membro, index) => {
+          const listItem = document.createElement('li');
+          listItem.innerHTML = `
+                <span><strong>${membro.nome}</strong> - ${membro.funcao}</span>
+                <button type="button" class="remover-btn" data-prefixo="${prefixo}" data-index="${index}">Remover</button>
+            `;
+          listaEquipe.appendChild(listItem);
+        });
+        equipeDataHidden.value = JSON.stringify(equipe);
+      }
+
+      // Evento para o botão "Adicionar" (sem alterações)
+      addFuncionarioBtn.addEventListener('click', () => {
+        const funcionarioId = funcionarioSelect.value;
+        const funcionarioNome = funcionarioSelect.options[funcionarioSelect.selectedIndex].text;
+        const funcao = funcaoInput.value.trim();
+
+        if (!funcao) {
+          alert('Por favor, defina uma função para o funcionário.');
+          return;
+        }
+        if (equipe.some(membro => membro.id === funcionarioId)) {
+          alert('Este funcionário já foi adicionado à equipa.');
+          return;
+        }
+
+        equipe.push({ id: funcionarioId, nome: funcionarioNome, funcao: funcao });
+        // Limpa o campo de função para a próxima adição (melhoria: não limpa se for select)
+        if (funcaoInput.tagName.toLowerCase() === 'input') {
+          funcaoInput.value = '';
+        }
+        atualizarEquipe();
+      });
+
+      // Evento para os botões "Remover" (sem alterações)
+      listaEquipe.addEventListener('click', (event) => {
+        if (event.target.classList.contains('remover-btn') && event.target.getAttribute('data-prefixo') === prefixo) {
+          const indexParaRemover = parseInt(event.target.getAttribute('data-index'));
+          equipe.splice(indexParaRemover, 1);
+          atualizarEquipe();
+        }
+      });
+
+      // Chama a nova função para carregar os dados iniciais
+      inicializarEquipe();
+    }
+
+    // "Liga" a nossa função genérica aos componentes (sem alterações)
+    document.addEventListener('DOMContentLoaded', function () {
+      // Verifica se os elementos existem na página antes de tentar inicializar
+      if (document.getElementById('lista-equipe-interna')) {
+        gerirEquipe('interna');
+      }
+      if (document.getElementById('lista-equipe-externa')) {
+        gerirEquipe('externa');
+      }
+    });
+  </script>
 </body>
+
 </html>

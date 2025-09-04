@@ -69,5 +69,6 @@ def inserir_gravacao(data):
         db.session.rollback()
         return {"success": False, "message": f"Ocorreu um erro: {e}"}
 
+#OBS: Tratar a data. Vai vir como texto
 def atualizarGravacao(id: int):
     pass
