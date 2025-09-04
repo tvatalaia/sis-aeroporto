@@ -12,7 +12,7 @@
   <div class="container">
     <h1>Editar Gravação</h1>
 
-    <form id="form-editar" action="/editar/{{ gravacao.id_gravacao }}" method="post">
+    <form id="form-editar" action="/gravacoes/editar/{{ gravacao.id_gravacao }}" method="post">
       <label>Data:</label>
       <input type="text" name="data" value="{{ gravacao.data_hora }}" required>
 

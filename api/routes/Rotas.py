@@ -72,6 +72,7 @@ def adicionar():
 
 @gravacaoBp.route('/gravacoes/editar/<int:id>', methods=['GET'])
 def editar(id):
+
     gravacao = carregar_gravacao(id)
     programa = carregar_programas()
     producaoInterna = carregar_estudio()
@@ -79,6 +80,14 @@ def editar(id):
     funcionarios = carregar_funcionarios()
 
     return render_template("editar.html", gravacao=gravacao, programa=programa, producaoInterna=producaoInterna, clienteExterno=clienteExterno, funcionarios=funcionarios)
+
+@gravacaoBp.route('/gravacoes/editar/<int:id>', methods=['POST'])
+def atualizarGravacao(id):
+    data = request.form.to_dict()
+
+    atualizar_gravacao(id, data)
+
+    return redirect('/gravacoes')
 
 @gravacaoBp.route('/gravacoes/excluir/<int:index>', methods=['POST'])
 def excluir(index):
