@@ -8,7 +8,12 @@ app = create_app()
 
 # Use o contexto da aplicação
 with app.app_context():
-    gravacao = findById(20)
+    gravacao = findById(21)
 
     for funcionario in gravacao.funcionarios_associados:
         print(f"Nome: {funcionario.funcionario.nome} \nFunção: {funcionario.funcao}")
+    
+    equipe = carregar_equipes()
+
+    for funcionario in equipe:
+        print(f"Id: {funcionario.id_gravacao} \nNome: {funcionario.nome} \nFunção: {funcionario.funcao}")

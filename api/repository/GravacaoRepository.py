@@ -15,24 +15,22 @@ def findAll():
     return db.session.execute(sql).fetchall()
 
 def findById(id: int):
-    ### gravacoes = findAll()
-
-    #for gravacao in gravacoes:
-    #    if gravacao[0] == id:
-    #        gravacaoObj = Gravacao(
-    #            id_gravacao = gravacao[0],
-    #            id_gravacao = gravacao[0],
-#                id_gravacao = gravacao[0],
- #               id_gravacao = gravacao[0]
-  #          )
-    
     return Gravacao.query.get(id)
 
+def carregar_equipes():
+    sql = text("select g.id_gravacao, f.nome, gf.funcao from gravacao g " \
+    "left join gravacao_funcionario gf on gf.fk_id_gravacao = g.id_gravacao " \
+    "inner join funcionario f on f.id_funcionario = gf.fk_id_funcionario;")
+
+    return db.session.execute(sql).fetchall()
+
 def carregar_equipe(id: int):
-    sql = text("select f.nome, gf.funcao from gravacao g " \
+    sql = text("select g.id_gravacao, f.nome, gf.funcao from gravacao g " \
     "left join gravacao_funcionario gf on gf.fk_id_gravacao = g.id_gravacao " \
     "inner join funcionario f on f.id_funcionario = gf.fk_id_funcionario " \
-    "where g.id_gravacao = {id};")
+    "where g.id_gravacao = :id ;")
+
+    return db.session.execute(sql, {"id": id}).fetchall()
 
 def insert(g : Gravacao):
     db.session.add(g)

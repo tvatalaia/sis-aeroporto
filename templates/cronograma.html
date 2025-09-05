@@ -25,6 +25,7 @@
             <th>Data e Hora</th>
             <th>Tipo da Gravação</th>
             <th>Programa</th>
+            <th>Equipe</th>
           </tr>
         </thead>
         <tbody>
@@ -33,15 +34,13 @@
             <td>{{ item.data_hora }}</td>
             <td>{{ item.tipo }}</td>
             <td>{{ item.descricao }}</td>
-            <!--<td>
-              {{ g['horario'] }}
-              {% if g['gravando_agora'] %}
-              <span class="ao-vivo-agora">🔴 GRAVANDO</span>
-              <div class="barra-progresso">
-                  <div class="progresso" style="width:{{ g['progresso'] }}%;"></div>
-              </div>
+            <td>
+            {% for func in equipes %}
+              {% if func.id_gravacao == item.id %}
+                Função: {{func.funcao}} Nome: {{func.nome}}
               {% endif %}
-            </td>-->
+            {% endfor %}
+            </td>
           </tr>
           {% else %}
           <tr><td colspan="5">Nenhuma gravação</td></tr>
@@ -58,6 +57,7 @@
             <th>Data e Hora</th>
             <th>Tipo da Gravação</th>
             <th>Programa</th>
+            <th>Equipe</th>
           </tr>
         </thead>
         <tbody>
@@ -66,15 +66,11 @@
             <td>{{ item.data_hora }}</td>
             <td>{{ item.tipo }}</td>
             <td>{{ item.descricao }}</td>
-            <!--<td>
-              {{ g['horario'] }}
-              {% if g['gravando_agora'] %}
-              <span class="ao-vivo-agora">🔴 GRAVANDO</span>
-              <div class="barra-progresso">
-                  <div class="progresso" style="width:{{ g['progresso'] }}%;"></div>
-              </div>
+            {% for func in equipes %}
+              {% if func.id_gravacao == item.id %}
+              <td>Função: {{func.funcao}} Nome: {{func.nome}}</td>
               {% endif %}
-            </td>-->
+            {% endfor %}
           </tr>
           {% else %}
           <tr><td colspan="5">Nenhuma gravação</td></tr>
