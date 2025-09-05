@@ -77,7 +77,6 @@ def excluir(id):
 @gravacaoBp.route('/cronograma')
 def visualizar_tudo():
     gravações = carregar_gravacoes()
-    equipes = carregar_equipes()
     estudio = []
     externa = []
 
@@ -87,7 +86,7 @@ def visualizar_tudo():
         else:
             estudio.append(item)
 
-    return render_template('cronograma.html', estudio=estudio, externa=externa, equipes=equipes)
+    return render_template('cronograma.html', estudio=estudio, externa=externa)
 
 @gravacaoBp.route('/relatorios')
 def relatorios():
