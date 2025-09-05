@@ -23,31 +23,10 @@ def nova_gravacao():
     gravações = carregar_gravacoes()
     programa = carregar_programas()
     producaoInterna = carregar_estudio()
-    clienteExterno = carregar_externa()
+    clienteExterno = carregar_externas()
     funcionarios = carregar_funcionarios()
 
     return render_template('index.html', gravações=gravações, programa=programa, producaoInterna=producaoInterna, clienteExterno=clienteExterno, funcionarios=funcionarios)
-
-@gravacaoBp.route('/teste-json', methods=['POST'])
-def testarJson():
-    data = request.form.to_dict()
-
-    #Configurando data e hora
-    d = datetime.strptime(data.get("data"), "%Y-%m-%d").date()
-    t = datetime.strptime(data.get("horario"), "%H:%M").time()
-
-    timestamp = datetime.combine(d, t)
-
-    #Configurando lista
-    funcionarios = json.loads(data.get("equipe_data_interna"))
-    print(data)
-    print(timestamp)
-    for item in funcionarios:
-        print("Id: " + item["id"])
-        print("Nome: " + item["nome"])
-        print("Função: " + item["funcao"])
-    
-    return data
 
 @gravacaoBp.route('/gravacoes', methods=['POST'])
 def adicionar():
@@ -72,29 +51,30 @@ def adicionar():
 
 @gravacaoBp.route('/gravacoes/editar/<int:id>', methods=['GET'])
 def editar(id):
+
     gravacao = carregar_gravacao(id)
+    programa = carregar_programas()
+    producaoInterna = carregar_estudio()
+    clienteExterno = carregar_externas()
+    funcionarios = carregar_funcionarios()
 
-    return render_template("editar.html", gravacao=gravacao)
+    return render_template("editar.html", gravacao=gravacao, programa=programa, producaoInterna=producaoInterna, clienteExterno=clienteExterno, funcionarios=funcionarios)
 
-@gravacaoBp.route('/gravacoes/excluir/<int:index>', methods=['POST'])
-def excluir(index):
-    gravações = carregar_gravacoes()
-    if 0 <= index < len(gravações):
-        excluido_por = request.form.get('excluido_por', '').strip() or 'Desconhecido'
-        ip_usuario = request.remote_addr
+@gravacaoBp.route('/gravacoes/editar/<int:id>', methods=['POST'])
+def atualizarGravacao(id):
+    data = request.form.to_dict()
 
-        gravações[index]['excluido'] = True
-        gravações[index]['excluido_por'] = excluido_por
-        gravações[index]['data_exclusao'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        gravações[index]['ip_exclusao'] = ip_usuario
+    atualizar_gravacao(id, data)
 
-        salvar_dados(gravações)
-        flash("Gravação excluída com sucesso!", "success")
-    else:
-        flash("Índice inválido para exclusão.", "error")
-    return redirect('/nova')
+    return redirect('/gravacoes')
 
-@gravacaoBp.route('/visualizar/tudo')
+@gravacaoBp.route('/gravacoes/excluir/<int:id>', methods=['POST'])
+def excluir(id):
+    excluir_gravacao(id)
+
+    return redirect('/gravacoes')
+
+@gravacaoBp.route('/cronograma')
 def visualizar_tudo():
     gravações = carregar_gravacoes()
     estudio = []
@@ -106,7 +86,7 @@ def visualizar_tudo():
         else:
             estudio.append(item)
 
-    return render_template('visualizar_tudo.html', estudio=estudio, externa=externa)
+    return render_template('cronograma.html', estudio=estudio, externa=externa)
 
 @gravacaoBp.route('/relatorios')
 def relatorios():
@@ -142,12 +122,6 @@ def relatorios():
         total_horas_mes=dict(total_horas_mes),
         total_horas_programa=dict(total_horas_programa)
     )
-
-@gravacaoBp.route('/historico')
-def historico():
-    gravações = carregar_gravacoes()
-    gravações_excluidas = [g for g in gravações if g.get('excluido')]
-    return render_template('historico.html', gravações=gravações_excluidas)
 
 @gravacaoBp.route('/exportar_relatorios/<tipo>')
 def exportar_relatorios(tipo):

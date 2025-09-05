@@ -69,5 +69,60 @@ def inserir_gravacao(data):
         db.session.rollback()
         return {"success": False, "message": f"Ocorreu um erro: {e}"}
 
-def atualizarGravacao(id: int):
-    pass
+#OBS: Tratar a data. Vai vir como texto
+def atualizar_gravacao(id: int, data):
+
+    try:
+        gravacaoAntiga = findById(id)
+
+        data_nova_convertida = datetime.strptime(data.get("data"), "%Y-%m-%d %H:%M:%S")
+
+        gravacaoAntiga.data_hora = data_nova_convertida
+        gravacaoAntiga.data_hora_modificacao = datetime.now()
+
+        if gravacaoAntiga.tipo == 'Ao Vivo':
+            gravacaoAntiga.fk_id_programa = int(data.get("programa"))
+        elif gravacaoAntiga.tipo == 'Interna':
+            gravacaoAntiga.fk_id_producao_interna = int(data.get("producao_interna"))
+            equipe_json_string = data.get("equipe_data_interna")
+        else:
+            gravacaoAntiga.fk_id_cliente_externo = int(data.get("cliente_externo"))
+            equipe_json_string = data.get("equipe_data_externa")
+
+        GravacaoFuncionario.query.filter_by(fk_id_gravacao=id).delete()
+
+        if equipe_json_string:
+            nova_equipe_lista = json.loads(equipe_json_string)
+            for membro in nova_equipe_lista:
+                novo_membro_equipe = GravacaoFuncionario(
+                    fk_id_gravacao=id,
+                    fk_id_funcionario=int(membro["id"]),
+                    funcao=membro["funcao"]
+                )
+
+                db.session.add(novo_membro_equipe)
+
+        db.session.commit()
+        return {"success": True, "message": "Gravação atualizada com sucesso."}
+
+    except Exception as e:
+        # Se qualquer passo falhar, desfaz todas as alterações
+        db.session.rollback()
+        print(f"ERRO AO ATUALIZAR: {e}") # Para depuração no seu terminal
+        return {"success": False, "message": f"Ocorreu um erro: {e}"}
+
+def excluir_gravacao(id: int):
+    try:
+        gravacao = findById(id)
+
+        if gravacao.tipo == 'Interna' or gravacao.tipo == 'Externa':
+            GravacaoFuncionario.query.filter_by(fk_id_gravacao=id).delete()
+        
+        remove(gravacao)
+
+        db.session.commit()
+        return {"success": True, "message": f"Remoção realizada com sucesso"}
+    except Exception as e:
+        db.session.rollback()
+        print(f"ERRO NA REMOÇÃO DE UM REGISTRO: {e}")
+        return {"success": False, "message": f"Ocorreu um erro: {e}"}

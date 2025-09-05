@@ -78,6 +78,22 @@ class Gravacao(db.Model):
         ),
     )
 
+    @property
+    def descricao_dinamica(self):
+        """
+        Retorna a descrição correta com base no tipo da gravação.
+        Como os relacionamentos (self.programa, etc.) já foram pré-carregados
+        pela consulta no repositório, aceder a eles aqui é instantâneo e
+        NÃO causa uma nova consulta ao banco de dados.
+        """
+        if self.tipo == 'Ao Vivo' and self.programa:
+            return self.programa.descricao
+        elif self.tipo == 'Interna' and self.producao_interna:
+            return self.producao_interna.descricao
+        elif self.tipo == 'Externa' and self.cliente_externo:
+            return self.cliente_externo.descricao
+        return "Descrição não disponível" # Uma opção de fallback segura
+
 class GravacaoFuncionario(db.Model):
     __tablename__ = 'gravacao_funcionario'
     # Chaves primárias compostas

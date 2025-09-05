@@ -1,38 +1,21 @@
 from extensions import db
 from sqlalchemy import text
-from api.models.Models import Gravacao
+from sqlalchemy.orm import joinedload, selectinload
+from api.models.Models import Gravacao, GravacaoFuncionario
 
 def findAll():
-    sql = text("select g.id_gravacao as id, g.data_hora, g.tipo, p.descricao from gravacao g " \
-    "left join programa p on p.id_programa = g.fk_id_programa where tipo = 'Ao Vivo' " \
-    "UNION " \
-    "select g.id_gravacao as id, g.data_hora, g.tipo, pi.descricao from gravacao g " \
-    "left join producao_interna pi on pi.id_producao_interna = g.fk_id_producao_interna where tipo in('Interna') " \
-    "UNION " \
-    "select g.id_gravacao as id, g.data_hora, g.tipo, ce.descricao from gravacao g " \
-    "left join cliente_externo ce on ce.id_cliente_externo = g.fk_id_cliente_externo where tipo in('Externa');")
-
-    return db.session.execute(sql).fetchall()
+    return Gravacao.query.options(
+        # Pré-carrega os relacionamentos "um-para-um" (usa JOIN)
+        joinedload(Gravacao.programa),
+        joinedload(Gravacao.producao_interna),
+        joinedload(Gravacao.cliente_externo),
+        # Pré-carrega a equipa (relacionamento "muitos-para-muitos")
+        # 'selectinload' é mais eficiente aqui, pois faz uma segunda query para todas as equipas.
+        selectinload(Gravacao.funcionarios_associados).joinedload(GravacaoFuncionario.funcionario)
+    ).order_by(Gravacao.data_hora.desc()).all()
 
 def findById(id: int):
-    ### gravacoes = findAll()
-
-    #for gravacao in gravacoes:
-    #    if gravacao[0] == id:
-    #        gravacaoObj = Gravacao(
-    #            id_gravacao = gravacao[0],
-    #            id_gravacao = gravacao[0],
-#                id_gravacao = gravacao[0],
- #               id_gravacao = gravacao[0]
-  #          )
-    
     return Gravacao.query.get(id)
-
-def carregar_equipe(id: int):
-    sql = text("select f.nome, gf.funcao from gravacao g " \
-    "left join gravacao_funcionario gf on gf.fk_id_gravacao = g.id_gravacao " \
-    "inner join funcionario f on f.id_funcionario = gf.fk_id_funcionario " \
-    "where g.id_gravacao = {id};")
 
 def insert(g : Gravacao):
     db.session.add(g)
