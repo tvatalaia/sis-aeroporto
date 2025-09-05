@@ -71,6 +71,7 @@ def inserir_gravacao(data):
 
 #OBS: Tratar a data. Vai vir como texto
 def atualizar_gravacao(id: int, data):
+
     try:
         gravacaoAntiga = findById(id)
 
@@ -108,4 +109,20 @@ def atualizar_gravacao(id: int, data):
         # Se qualquer passo falhar, desfaz todas as alterações
         db.session.rollback()
         print(f"ERRO AO ATUALIZAR: {e}") # Para depuração no seu terminal
+        return {"success": False, "message": f"Ocorreu um erro: {e}"}
+
+def excluir_gravacao(id: int):
+    try:
+        gravacao = findById(id)
+
+        if gravacao.tipo == 'Interna' or gravacao.tipo == 'Externa':
+            GravacaoFuncionario.query.filter_by(fk_id_gravacao=id).delete()
+        
+        remove(gravacao)
+
+        db.session.commit()
+        return {"success": True, "message": f"Remoção realizada com sucesso"}
+    except Exception as e:
+        db.session.rollback()
+        print(f"ERRO NA REMOÇÃO DE UM REGISTRO: {e}")
         return {"success": False, "message": f"Ocorreu um erro: {e}"}

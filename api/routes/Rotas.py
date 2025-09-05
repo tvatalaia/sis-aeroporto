@@ -89,23 +89,11 @@ def atualizarGravacao(id):
 
     return redirect('/gravacoes')
 
-@gravacaoBp.route('/gravacoes/excluir/<int:index>', methods=['POST'])
-def excluir(index):
-    gravações = carregar_gravacoes()
-    if 0 <= index < len(gravações):
-        excluido_por = request.form.get('excluido_por', '').strip() or 'Desconhecido'
-        ip_usuario = request.remote_addr
+@gravacaoBp.route('/gravacoes/excluir/<int:id>', methods=['POST'])
+def excluir(id):
+    excluir_gravacao(id)
 
-        gravações[index]['excluido'] = True
-        gravações[index]['excluido_por'] = excluido_por
-        gravações[index]['data_exclusao'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        gravações[index]['ip_exclusao'] = ip_usuario
-
-        salvar_dados(gravações)
-        flash("Gravação excluída com sucesso!", "success")
-    else:
-        flash("Índice inválido para exclusão.", "error")
-    return redirect('/nova')
+    return redirect('/gravacoes')
 
 @gravacaoBp.route('/visualizar/tudo')
 def visualizar_tudo():
