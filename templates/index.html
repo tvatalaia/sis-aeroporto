@@ -172,15 +172,15 @@
         {% for item in gravações %}
         <tr data-tipo="{{ item.tipo }}" 
             data-data-original="{{ g.get('data_original', '') }}">
-          <td>{{ item.id }}</td>
+          <td>{{ item.id_gravacao }}</td>
           <td>{{ item.data_hora }}</td>
           <td>{{ item.tipo }}</td>
-          <td>{{ item.descricao }}</td>
+          <td>{{ item.descricao_dinamica }}</td>
           <td class="acoes">
-            <form action="/gravacoes/editar/{{ item.id }}" method="get">
+            <form action="/gravacoes/editar/{{ item.id_gravacao }}" method="get">
               <button type="submit" class="editar">Editar</button>
             </form>
-            <form action="/gravacoes/excluir/{{ item.id }}" method="POST" class="form-excluir" style="display:inline;">
+            <form action="/gravacoes/excluir/{{ item.id_gravacao }}" method="POST" class="form-excluir" style="display:inline;">
               <button type="submit" class="excluir">Excluir</button>
             </form>
           </td>
