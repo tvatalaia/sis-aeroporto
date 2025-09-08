@@ -67,7 +67,7 @@
         </label>
 
         <div class="equipe-container">
-            <h3>Montar Equipe Interna</h3>
+            <h3>Montar Equipe Interna (Caso não tenha equipe, enviar em branco!)</h3>
             <div class="equipe-controls">
                 <div class="select-container">
                     <label for="funcionario-select-interna">Funcionário:</label>
@@ -170,10 +170,11 @@
       </thead>
       <tbody>
         {% for item in gravações %}
-        <tr data-tipo="{{ item.tipo }}" 
-            data-data-original="{{ g.get('data_original', '') }}">
+        <tr data-tipo="{% if item.tipo == 'Interna' %}Estudio{% else %}{{ item.tipo }}{% endif %}" 
+            data-ao-vivo="{{ 'true' if item.tipo == 'Ao Vivo' else 'false' }}"
+            data-data-original="{{ item.data_hora.strftime('%Y-%m-%d') }}">
           <td>{{ item.id_gravacao }}</td>
-          <td>{{ item.data_hora }}</td>
+          <td>{{ item.data_hora.strftime('%d/%m/%Y %H:%M') }}</td>
           <td>{{ item.tipo }}</td>
           <td>{{ item.descricao_dinamica }}</td>
           <td class="acoes">

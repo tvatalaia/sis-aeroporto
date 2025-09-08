@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="refresh" content="5">
+  <meta http-equiv="refresh" content="15">
   <title>Cronograma Completo</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/visualizar_tudo.css') }}">
 </head>
@@ -15,12 +15,12 @@
   <header>
     <div class="titulo">CRONOGRAMA</div>
     <div class="clock" id="clock">--:--:--</div>
-    <img class="gif-logo" src="../static/logo2.png" alt="Logo Atalaia">
+    <img class="gif-logo" src="{{ url_for('static', filename='logo2.png') }}" alt="Logo Atalaia">
   </header>
 
   <div class="painel">
     <div class="tabela-visualizacao">
-      <h2>Gravações de Estúdio</h2>
+      <h2>Gravações de Estúdio / Ao Vivo</h2>
       <table>
         <thead>
           <tr>
@@ -43,9 +43,7 @@
             </td>
           </tr>
           {% else %}
-          <tr>
-            <td colspan="5">Nenhuma gravação</td>
-          </tr>
+          <tr><td colspan="4">Nenhuma gravação de estúdio para hoje.</td></tr>
           {% endfor %}
         </tbody>
       </table>
@@ -76,9 +74,7 @@
           </tr>
           </tr>
           {% else %}
-          <tr>
-            <td colspan="5">Nenhuma gravação</td>
-          </tr>
+          <tr><td colspan="4">Nenhuma gravação externa para hoje.</td></tr>
           {% endfor %}
         </tbody>
       </table>
