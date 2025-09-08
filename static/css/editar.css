@@ -1,48 +1,168 @@
- body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f4;
-      margin: 0;
-      padding: 0;
-      background-image: url('css/fundo.png');
-      background-size: cover;
-      background-position: center;
-      background-attachment: fixed;
-    }
-    .container {
-      max-width: 600px;
-      margin: 60px auto;
-      background-color: white;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    h1 { text-align: center; margin-bottom: 30px; }
-    form label { display: block; margin-bottom: 10px; font-weight: bold; }
-    input, select {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 20px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-      box-sizing: border-box;
-    }
-    button {
-      padding: 10px 20px;
-      background-color: #0066cc;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    button:hover { background-color: #004999; }
-    .actions { display: flex; justify-content: space-between; }
-    a { color: #666; text-decoration: none; margin-left: 10px; align-self: center; }
-    a:hover { text-decoration: underline; }
-    #particle-canvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -1;
-    }
+/* ========================================
+   Reset básico e corpo da página
+   ======================================== */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  margin: 0;
+  padding: 0;
+  background-image: url('css/fundo.png');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+/* ========================================
+   Container principal
+   ======================================== */
+.container {
+  max-width: 600px;
+  margin: 60px auto;
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+/* ========================================
+   Títulos
+   ======================================== */
+h1 {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+h3 {
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+h4 {
+  margin-top: 15px;
+  margin-bottom: 10px;
+}
+
+/* ========================================
+   Formulário
+   ======================================== */
+form label {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+input, select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 20px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+/* ========================================
+   Botões
+   ======================================== */
+button {
+  padding: 8px 16px; /* Ajuste menor */
+  background-color: #0066cc;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-size: 0.9em;
+}
+
+button:hover {
+  background-color: #004999;
+}
+
+/* ========================================
+   Links
+   ======================================== */
+a {
+  color: #666;
+  text-decoration: none;
+  margin-left: 10px;
+  align-self: center;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* ========================================
+   Área de ações do formulário
+   ======================================== */
+.actions {
+  display: flex;
+  justify-content: flex-start; /* Botão à esquerda */
+  gap: 10px; /* Espaço entre Salvar e Cancelar */
+  margin-top: 20px; /* Distância da tabela/lista de equipe */
+  align-items: center;
+}
+/* ========================================
+   Equipe e listas
+   ======================================== */
+.equipe-container {
+  margin-top: 20px;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+.equipe-controls button {
+  padding: 6px 12px;
+  font-size: 0.85em;
+  margin-top: 22px; /* Alinha com os selects */
+  flex-shrink: 0; /* Não expande na linha */
+}
+
+.select-container,
+.input-container {
+  flex: 1;
+  min-width: 120px;
+}
+
+ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+ul li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+  padding: 5px 10px;
+  background-color: #eef;
+  border-radius: 5px;
+}
+
+.remover-btn {
+  background-color: #cc0000;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 3px 7px;
+  cursor: pointer;
+  font-size: 0.9em;
+}
+
+.remover-btn:hover {
+  background-color: #990000;
+}
+
+/* ========================================
+   Canvas de partículas (background)
+   ======================================== */
+#particle-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}

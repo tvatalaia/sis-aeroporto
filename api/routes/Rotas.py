@@ -80,11 +80,15 @@ def visualizar_tudo():
     estudio = []
     externa = []
 
+    hoje = datetime.now().date()
+
     for item in gravações:
-        if(item.tipo == "Externa"):
-            externa.append(item)
-        else:
-            estudio.append(item)
+        # Compara apenas a parte da data do timestamp da gravação com a data de hoje
+        if item.data_hora.date() == hoje:
+            if item.tipo == "Externa":
+                externa.append(item)
+            else: # 'Interna' e 'Ao Vivo' vão para a mesma tabela
+                estudio.append(item)
 
     return render_template('cronograma.html', estudio=estudio, externa=externa)
 
