@@ -67,7 +67,7 @@
         </label>
 
         <div class="equipe-container">
-            <h3>Montar Equipa Interna</h3>
+            <h3>Montar Equipe Interna</h3>
             <div class="equipe-controls">
                 <div class="select-container">
                     <label for="funcionario-select-interna">Funcionário:</label>
@@ -87,9 +87,9 @@
                         <option value="Operador de TP">Operador de TP</option>
                     </select>
                 </div>
-                <button type="button" id="add-funcionario-btn-interna">Adicionar à Equipa +</button>
+                <button type="button" id="add-funcionario-btn-interna">Adicionar à Equipe +</button>
             </div>
-            <h4>Equipa da Gravação:</h4>
+            <h4>Equipe da Gravação:</h4>
             <ul id="lista-equipe-interna"></ul>
             <input type="hidden" name="equipe_data_interna" id="equipe-data-hidden-interna">
         </div>
@@ -105,7 +105,7 @@
         </label>
 
         <div class="equipe-container">
-            <h3>Montar Equipa Externa</h3>
+            <h3>Montar Equipe Externa</h3>
             <div class="equipe-controls">
                 <div class="select-container">
                     <label for="funcionario-select-externa">Funcionário:</label>
@@ -125,9 +125,9 @@
                         <option value="Motorista">Motorista</option>
                     </select>
                 </div>
-                <button type="button" id="add-funcionario-btn-externa">Adicionar à Equipa +</button>
+                <button type="button" id="add-funcionario-btn-externa">Adicionar à Equipe +</button>
             </div>
-            <h4>Equipa da Gravação:</h4>
+            <h4>Equipe da Gravação:</h4>
             <ul id="lista-equipe-externa"></ul>
             <input type="hidden" name="equipe_data_externa" id="equipe-data-hidden-externa">
         </div>
@@ -268,7 +268,7 @@ function gerirEquipe(prefixo) {
             return;
         }
         if (equipe.some(membro => membro.id === funcionarioId)) {
-            alert('Este funcionário já foi adicionado à equipa.');
+            alert('Este funcionário já foi adicionado à equipe.');
             return;
         }
 
