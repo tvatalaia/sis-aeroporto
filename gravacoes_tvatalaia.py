@@ -1,5 +1,5 @@
 from flask import Flask
-from extensions import db
+from extensions import db, migrate
 from api.routes.Rotas import gravacaoBp
 
 def create_app():
@@ -15,6 +15,9 @@ def create_app():
     # Isto é feito aqui para evitar a importação circular.
     db.init_app(app)
 
+    #Cria a migração do banco
+    migrate.init_app(app, db)
+
     # Regista o Blueprint com as rotas
     app.register_blueprint(gravacaoBp)
 
@@ -22,4 +25,4 @@ def create_app():
 
 if __name__ == '__main__':
     app = create_app()
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000)
