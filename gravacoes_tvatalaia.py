@@ -8,7 +8,7 @@ def create_app():
     app.secret_key = 'super_secret_key'
 
     # Configuração do Banco de Dados
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:root@localhost:3306/db_aeroporto'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:root@mysql:3306/db_aeroporto'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
     # Associa o objeto 'db' à nossa aplicação.
